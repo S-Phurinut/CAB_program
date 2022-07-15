@@ -235,4 +235,31 @@ class Alternatives():
                     else :
                         reward_dict[alt]=np.concatenate((reward_dict[alt],reward+noise))
 
+        elif context=="collapsed-mean":
+            #add the accessive value to true mean (in case situaton is exceptional)
+            keys=list(range(num_alternative))
+            reward_dict=dict.fromkeys(keys, None)
+            if action==None:
+                for alt in range(num_alternative):
+                    if self.noise==True:
+                        noise=np.random.randn(1,)
+                    else:
+                        noise=0
+                    #Reward distribution is endowed by normal dis. N(μ,σ^2) 
+                    reward=(alt)/(num_alternative-1) + 1 * np.random.randn(1,)-100
+                    reward_dict[alt]=reward
+            
+            else:
+                for alt in action:
+                    if self.noise==True:
+                        noise=np.random.randn(1,)
+                    else:
+                        noise=0
+                    #Reward distribution is endowed by normal dis. N(μ,σ^2) 
+                    reward=(alt)/(num_alternative-1) + 1 * np.random.randn(1,)-100
+                    if  np.any(reward_dict[alt])==None:
+                        reward_dict[alt]=reward+noise
+                    else :
+                        reward_dict[alt]=np.concatenate((reward_dict[alt],reward+noise))
+
         return reward_dict
