@@ -27,8 +27,9 @@ class Sequential_EVI_algorithm():
             alter=alternative
 
         first_stage_sample_size=6
-        times_of_sampling=1
+        
         additional_total_sample=num_rounds-(alter.num_alt*first_stage_sample_size)
+        times_of_sampling=additional_total_sample
         
         num_sample=np.zeros(shape=(alter.num_alt,)) 
         #Sample x_i1,...,x_in0 independently
@@ -60,6 +61,7 @@ class Sequential_EVI_algorithm():
         
 #         print("----- allocate a good policy -----")
         need_initialise=True
+        num_loop=0
         while stop<(alter.num_alt*first_stage_sample_size)+additional_total_sample:
             initial_alt_set=np.arange(0,alter.num_alt)
             initial_alt_set=set(initial_alt_set) #contain {(1),(2),...,(k)}
@@ -101,11 +103,13 @@ class Sequential_EVI_algorithm():
                 for add_num_stage in τ_i:
                     if add_num_stage!=0 and math.isnan(add_num_stage)==False:
                         for j in range(math.floor(add_num_stage)):
-                            reward_dict=alter.main_reward(action=[order_array_emp[index]])
+                            index_context=num_loop%len(context_list)
+                            reward_dict=alter.context_based_reward(context=context_list[index_context],action=[order_array_emp[index]])
                             for r in range(alter.num_alt):
                                 if reward_dict[r]!=None:
                                     reward[r]=np.concatenate((reward[r],reward_dict[r]))
                     index+=1
+                num_loop=num_loop+1
 
                 #Update the sample statistics
                 num_sample=num_sample+reorder_τ_i
